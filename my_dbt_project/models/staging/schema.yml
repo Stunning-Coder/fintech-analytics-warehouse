@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_raw_users
+    description: >
+      Staging model for user records. Cleans and standardizes raw user data
+      before joining with other sources in downstream models.
+    columns:
+      - name: user_id
+        description: Unique identifier for each user.
+        tests:
+          - not_null
+          - unique
+
+      - name: created_at
+        description: Timestamp when the user account was created.
+
+      - name: email
+        description: User’s registered email address.
+
+      - name: status
+        description: Status of the user (active, suspended, or pending_verification).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['active', 'suspended', 'pending_verification']
+
+  - name: stg_accounts
+    description: >
+      Staging model for account-level data. Prepares raw account details for
+      use in fact tables and user dimension joins.
+    columns:
+      - name: account_id
+        description: Unique identifier for each account.
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: Foreign key linking the account to its owner.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_raw_users')
+                field: user_id
+
+      - name: account_type
+        description: Account category (checking, investment, or savings).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['checking', 'investment', 'savings']
+
+      - name: opened_at
+        description: Timestamp when the account was created or opened.
+
+  - name: stg_transactions
+    description: >
+      Staging model for transaction data. Cleans, renames, and prepares fields
+      for building financial fact tables.
+    columns:
+      - name: transaction_id
+        description: Unique identifier for each transaction.
+        tests:
+          - not_null
+          - unique
+
+      - name: account_id
+        description: Account associated with the transaction.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_accounts')
+                field: account_id
+
+      - name: transaction_at
+        description: Timestamp when the transaction occurred.
+
+      - name: transaction_date
+        description: Extracted date portion of the transaction timestamp.
+
+      - name: transaction_type
+        description: Type of transaction (deposit or withdrawal).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['deposit', 'withdrawal']
+
+      - name: amount
+        description: Transaction amount; withdrawals are negative, deposits positive.
+        tests:
+          - not_null

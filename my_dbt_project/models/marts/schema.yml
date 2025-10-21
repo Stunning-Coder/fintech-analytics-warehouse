@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: dim_users
+    # ... (no changes in this model) ...
+    description: >
+      Dimension table combining user data from multiple raw sources — users, profiles,
+      KYC checks, and marketing attribution — to create a unified user view.
+      This dimension supports analytics on user demographics, onboarding, and KYC completion.
+    columns:
+      - name: user_id
+        description: Unique identifier for each user.
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        description: Timestamp when the user was created or registered.
+      - name: email
+        description: Email address of the user.
+      - name: user_status
+        description: Current user status (active, suspended, pending_verification).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['active', 'suspended', 'pending_verification']
+      - name: first_name
+        description: User’s first name.
+      - name: last_name
+        description: User’s last name.
+      - name: dob
+        description: Date of birth of the user.
+      - name: kyc_status
+        description: Latest KYC verification status (approved, failed, pending).
+      - name: kyc_checked_at
+        description: Timestamp of the latest KYC check.
+      - name: signup_source
+        description: The channel or campaign that led to user signup (e.g., Google, referral).
+      - name: campaign
+        description: Marketing campaign tag associated with the user signup.
+
+  - name: fct_transactions
+    # ... (no changes in this model) ...
+    description: >
+      Fact table containing all user transactions, joined with user_id from accounts.
+      Serves as a central dataset for monetary analysis, transaction trends, and retention metrics.
+    columns:
+      - name: transaction_id
+        description: Unique identifier for each transaction.
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: Identifier for the account linked to this transaction.
+      - name: user_id
+        description: Identifier for the user who owns the account.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: transaction_at
+        description: Timestamp of the transaction event.
+      - name: transaction_date
+        description: Extracted transaction date (YYYY-MM-DD) for easier time-based grouping.
+      - name: transaction_type
+        description: Type of transaction (deposit or withdrawal).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['deposit', 'withdrawal']
+      - name: amount
+        description: Transaction amount. Withdrawals are negative; deposits are positive.
+        tests:
+          - not_null
+
+  - name: kpi_retention
+    description: >
+      Calculates cohort-based user retention, showing what percentage of users
+      remain active over time relative to their signup month.
+    columns:
+      - name: cohort_month
+        description: The month users first signed up (used to group users into cohorts).
+        tests:
+          - not_null
+      - name: month_number
+        description: >
+          The number of months since the user’s signup cohort (0 = signup month, 1 = next month, etc.).
+      - name: total_users
+        description: Total users in each signup cohort.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: retained_users
+        description: Number of users who were active during each subsequent month.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: retention_percentage
+        description: >
+          The share of users retained from the original cohort (retained_users / total_users).
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= 1"

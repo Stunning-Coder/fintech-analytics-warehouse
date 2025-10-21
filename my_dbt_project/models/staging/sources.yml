@@ -1,0 +1,31 @@
+# models/staging/sources.yml
+version: 2
+
+sources:
+  - name: raw_data
+    description: "Source tables containing untransformed raw data ingested into the 
+fintech_dw database."
+    database: fintech_dw
+    schema: public
+    tables:
+      - name: raw_users
+        description: "Raw user registration and status data."
+      - name: raw_user_profiles
+        description: "User profile information including names and addresses."
+      - name: raw_kyc_checks
+        description: "KYC verification results for each user."
+      - name: raw_accounts
+        description: "User financial account records."
+      - name: raw_products
+        description: "Investment or financial products available to users."
+      - name: raw_transactions
+        description: "Deposit and withdrawal transaction data."
+      - name: raw_trades
+        description: "Trade activity records linking accounts and products."
+      - name: raw_market_prices
+        description: "Daily market price data for products over time."
+      - name: raw_user_logins
+        description: "User login activity timestamps."
+      - name: raw_marketing_attribution
+        description: "Marketing channel attribution for user acquisition."
+
