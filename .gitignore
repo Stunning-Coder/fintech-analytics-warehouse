@@ -10,3 +10,6 @@ my_dbt_project/logs/
 
 # OS files
 .DS_Store
+
+ingestion_scripts/.env
+logs/
