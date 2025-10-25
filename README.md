@@ -17,15 +17,7 @@ Looker, or Tableau).
 
 ### 🔄 Data Flow
 
-[Python Ingestion Scripts]
-↓
-[PostgreSQL Raw Tables]
-↓
-[dbt Staging Models]
-↓
-[dbt Marts / KPI Models]
-↓
-[BI Dashboard or SQL Queries]
+[Python Ingestion Scripts] > [PostgreSQL Raw Tables] > [dbt Staging Models] > [dbt Marts / KPI Models] > [BI Dashboard or SQL Queries]
 
 ---
 
@@ -36,11 +28,9 @@ Looker, or Tableau).
 
 | Layer | Tool | Description |
 |-------|------|--------------|
-| **Orchestration & Ingestion** | Python (`pandas`, `sqlalchemy`, `psycopg2`) | Loads 
-and simulates raw fintech data |
+| **Orchestration & Ingestion** | Python (`pandas`, `sqlalchemy`, `psycopg2`) | Loads and simulates raw fintech data |
 | **Data Warehouse** | PostgreSQL | Stores raw and transformed models |
-| **Transformation** | dbt (Data Build Tool) | Cleans, joins, and models 
-analytics-ready tables |
+| **Transformation** | dbt (Data Build Tool) | Cleans, joins, and models analytics-ready tables |
 
 ---
 
@@ -50,29 +40,29 @@ analytics-ready tables |
 ```bash
 git clone https://github.com/yourusername/fintech-analytics-warehouse.git
 cd fintech-analytics-warehouse
-
+```
 ### 2. Create and activate a virtual environment
 ```bash
 python -m venv venv
 source venv/bin/activate
-
+```
 ### 3. Install dependencies
 ```bash
 pip install - r requirements.txt
-
+```
 ### 4. Configure environment variables
 ```bash
 DATABASE_URL=postgresql+psycopg2://YourUser:YourPassWord@YourHostName:5432/fintech_dw
-
+```
 ### 5. Run data ingestion
 ```bash 
 python ingestion_scripts/load_raw_data.py
-
+```
 ### 6. Run dbt transformations
 ```bash
 cd my_dbt_project
 dbt run
-
+```
 ### Generate dbt docs
 dbt docs generate && dbt docs serve
 
@@ -118,7 +108,7 @@ fintech_analytics_warehouse/
 │   ├── dbt_project.yml         # dbt project configuration
 │   └── profiles.yml            # dbt connection profiles (local)
 └── README.md
-
+```
 ## 🧭 Future Enhancements
 
 - Add CI/CD automation using **GitHub Actions** for dbt runs  
