@@ -38,7 +38,7 @@ Looker, or Tableau).
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/fintech-analytics-warehouse.git
+git clone https://github.com/Stunning-Coder/fintech-analytics-warehouse.git
 cd fintech-analytics-warehouse
 ```
 ### 2. Create and activate a virtual environment
